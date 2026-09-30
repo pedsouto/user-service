@@ -1,5 +1,7 @@
 package com.pedsouto.userservice.controller;
 
+import com.pedsouto.userservice.dto.AddressDto;
+import com.pedsouto.userservice.dto.PhoneDto;
 import com.pedsouto.userservice.dto.UserDto;
 import com.pedsouto.userservice.infra.security.JwtUtil;
 import com.pedsouto.userservice.service.UserService;
@@ -13,7 +15,9 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -53,5 +57,23 @@ public class UserController {
     public ResponseEntity<Void> deleteByEmail(@PathVariable("email") String email) {
         userService.deleteByEmail(email);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping
+    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto,
+                                              @RequestHeader("Authorization") String token) {
+        return ResponseEntity.ok(userService.updateUser(token, userDto));
+    }
+
+    @PutMapping("/address")
+    public ResponseEntity<AddressDto> updateAddress(@RequestBody AddressDto addressDto,
+                                                    @RequestParam("id") Long id) {
+        return ResponseEntity.ok(userService.updateAddress(id, addressDto));
+    }
+
+    @PutMapping("/phone")
+    public ResponseEntity<PhoneDto> updatePhone(@RequestBody PhoneDto phoneDto,
+                                                @RequestParam("id") Long id) {
+        return ResponseEntity.ok(userService.updatePhone(id, phoneDto));
     }
 }

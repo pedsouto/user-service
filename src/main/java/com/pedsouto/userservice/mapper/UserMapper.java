@@ -8,23 +8,34 @@ import com.pedsouto.userservice.infra.entity.Phone;
 import com.pedsouto.userservice.infra.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.List;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(
+        componentModel = MappingConstants.ComponentModel.SPRING,
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
+)
 public interface UserMapper {
 
     User toEntity(UserDto dto);
 
     UserDto toDto(User entity);
 
+    void updateUserFromDto(UserDto dto, @MappingTarget User entity);
+
     Address toEntity(AddressDto dto);
 
     AddressDto toDto(Address entity);
 
+    void updateAddressFromDto(AddressDto dto, @MappingTarget Address entity);
+
     Phone toEntity(PhoneDto dto);
 
     PhoneDto toDto(Phone entity);
+
+    void updatePhoneFromDto(PhoneDto dto, @MappingTarget Phone entity);
 
     List<Address> toAddressEntityList(List<AddressDto> dtos);
 
