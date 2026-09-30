@@ -1,6 +1,10 @@
 package com.pedsouto.userservice.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -9,6 +13,7 @@ import lombok.*;
 @Builder
 public class PhoneDto {
 
+    private Long id;
     private String number;
     private String areaCode;
 }

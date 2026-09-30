@@ -1,9 +1,15 @@
 package com.pedsouto.userservice.service;
 
+import com.pedsouto.userservice.dto.AddressDto;
+import com.pedsouto.userservice.dto.PhoneDto;
 import com.pedsouto.userservice.dto.UserDto;
+import com.pedsouto.userservice.infra.entity.Address;
+import com.pedsouto.userservice.infra.entity.Phone;
 import com.pedsouto.userservice.infra.entity.User;
 import com.pedsouto.userservice.infra.exception.ConflictException;
 import com.pedsouto.userservice.infra.exception.ResourceNotFoundException;
+import com.pedsouto.userservice.infra.repository.AddressRepository;
+import com.pedsouto.userservice.infra.repository.PhoneRepository;
 import com.pedsouto.userservice.infra.repository.UserRepository;
 import com.pedsouto.userservice.infra.security.JwtUtil;
 import com.pedsouto.userservice.mapper.UserMapper;
@@ -17,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final AddressRepository addressRepository;
+    private final PhoneRepository phoneRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
@@ -47,12 +55,6 @@ public class UserService {
         userRepository.deleteByEmail(email);
     }
 
-    private void validateEmail(String email) {
-        if (userRepository.existsByEmail(email)) {
-            throw new ConflictException("Email already registered: " + email);
-        }
-    }
-
     @Transactional
     public UserDto updateUser(String token, UserDto userDto) {
         String email = jwtUtil.extractUsername(token.substring(7));
@@ -65,5 +67,31 @@ public class UserService {
         userMapper.updateUserFromDto(userDto, userEntity);
 
         return userMapper.toDto(userRepository.save(userEntity));
+    }
+
+    @Transactional
+    public AddressDto updateAddress(Long id, AddressDto addressDto) {
+        Address addressEntity = addressRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Address not found with id: " + id));
+
+        userMapper.updateAddressFromDto(addressDto, addressEntity);
+
+        return userMapper.toDto(addressRepository.save(addressEntity));
+    }
+
+    @Transactional
+    public PhoneDto updatePhone(Long id, PhoneDto phoneDto) {
+        Phone phoneEntity = phoneRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Phone not found with id: " + id));
+
+        userMapper.updatePhoneFromDto(phoneDto, phoneEntity);
+
+        return userMapper.toDto(phoneRepository.save(phoneEntity));
+    }
+
+    private void validateEmail(String email) {
+        if (userRepository.existsByEmail(email)) {
+            throw new ConflictException("Email already registered: " + email);
+        }
     }
 }

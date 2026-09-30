@@ -1,5 +1,7 @@
 package com.pedsouto.userservice.controller;
 
+import com.pedsouto.userservice.dto.AddressDto;
+import com.pedsouto.userservice.dto.PhoneDto;
 import com.pedsouto.userservice.dto.UserDto;
 import com.pedsouto.userservice.infra.security.JwtUtil;
 import com.pedsouto.userservice.service.UserService;
@@ -61,5 +63,17 @@ public class UserController {
     public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto,
                                               @RequestHeader("Authorization") String token) {
         return ResponseEntity.ok(userService.updateUser(token, userDto));
+    }
+
+    @PutMapping("/address")
+    public ResponseEntity<AddressDto> updateAddress(@RequestBody AddressDto addressDto,
+                                                    @RequestParam("id") Long id) {
+        return ResponseEntity.ok(userService.updateAddress(id, addressDto));
+    }
+
+    @PutMapping("/phone")
+    public ResponseEntity<PhoneDto> updatePhone(@RequestBody PhoneDto phoneDto,
+                                                @RequestParam("id") Long id) {
+        return ResponseEntity.ok(userService.updatePhone(id, phoneDto));
     }
 }
