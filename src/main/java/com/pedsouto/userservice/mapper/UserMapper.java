@@ -6,10 +6,7 @@ import com.pedsouto.userservice.dto.UserDto;
 import com.pedsouto.userservice.infra.entity.Address;
 import com.pedsouto.userservice.infra.entity.Phone;
 import com.pedsouto.userservice.infra.entity.User;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingConstants;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 
 import java.util.List;
 
@@ -19,27 +16,31 @@ import java.util.List;
 )
 public interface UserMapper {
 
-    User toEntity(UserDto dto);
+    User toUserEntity(UserDto dto);
 
-    UserDto toDto(User entity);
+    UserDto toUserDto(User entity);
 
     void updateUserFromDto(UserDto dto, @MappingTarget User entity);
 
-    Address toEntity(AddressDto dto);
+    Address toAddressEntity(AddressDto dto);
 
-    AddressDto toDto(Address entity);
+    Address toAddressEntity(AddressDto dto, Long userId);
+
+    AddressDto toAddressDto(Address entity);
 
     void updateAddressFromDto(AddressDto dto, @MappingTarget Address entity);
-
-    Phone toEntity(PhoneDto dto);
-
-    PhoneDto toDto(Phone entity);
-
-    void updatePhoneFromDto(PhoneDto dto, @MappingTarget Phone entity);
 
     List<Address> toAddressEntityList(List<AddressDto> dtos);
 
     List<AddressDto> toAddressDtoList(List<Address> entities);
+
+    Phone toPhoneEntity(PhoneDto dto);
+
+    Phone toPhoneEntity(PhoneDto dto, Long userId);
+
+    PhoneDto toPhoneDto(Phone entity);
+
+    void updatePhoneFromDto(PhoneDto dto, @MappingTarget Phone entity);
 
     List<Phone> toPhoneEntityList(List<PhoneDto> dtos);
 

@@ -30,4 +30,7 @@ public class Phone {
 
     @Column(name = "area_code", length = 5)
     private String areaCode;
+
+    @Column(name = "user_id")
+    private Long userId;
 }

@@ -14,6 +14,6 @@ import lombok.Setter;
 public class PhoneDto {
 
     private Long id;
-    private String number;
     private String areaCode;
+    private String number;
 }
