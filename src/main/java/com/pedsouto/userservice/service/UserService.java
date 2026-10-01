@@ -33,10 +33,10 @@ public class UserService {
     public UserDto saveUser(UserDto userDto) {
         validateEmail(userDto.getEmail());
 
-        User user = userMapper.toEntity(userDto);
+        User user = userMapper.toUserEntity(userDto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        return userMapper.toDto(userRepository.save(user));
+        return userMapper.toUserDto(userRepository.save(user));
     }
 
     @Transactional(readOnly = true)
@@ -44,7 +44,7 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
 
-        return userMapper.toDto(user);
+        return userMapper.toUserDto(user);
     }
 
     @Transactional
@@ -66,7 +66,7 @@ public class UserService {
 
         userMapper.updateUserFromDto(userDto, userEntity);
 
-        return userMapper.toDto(userRepository.save(userEntity));
+        return userMapper.toUserDto(userRepository.save(userEntity));
     }
 
     @Transactional
@@ -76,7 +76,7 @@ public class UserService {
 
         userMapper.updateAddressFromDto(addressDto, addressEntity);
 
-        return userMapper.toDto(addressRepository.save(addressEntity));
+        return userMapper.toAddressDto(addressRepository.save(addressEntity));
     }
 
     @Transactional
@@ -86,7 +86,33 @@ public class UserService {
 
         userMapper.updatePhoneFromDto(phoneDto, phoneEntity);
 
-        return userMapper.toDto(phoneRepository.save(phoneEntity));
+        return userMapper.toPhoneDto(phoneRepository.save(phoneEntity));
+    }
+
+    @Transactional
+    public AddressDto addAddress(String token, AddressDto dto) {
+        String email = jwtUtil.extractUsername(token.substring(7));
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+
+        Address address = userMapper.toAddressEntity(dto, user.getId());
+        Address savedAddress = addressRepository.save(address);
+
+        return userMapper.toAddressDto(savedAddress);
+    }
+
+    @Transactional
+    public PhoneDto addPhone(String token, PhoneDto dto) {
+        String email = jwtUtil.extractUsername(token.substring(7));
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+
+        Phone phone = userMapper.toPhoneEntity(dto, user.getId());
+        Phone savedPhone = phoneRepository.save(phone);
+
+        return userMapper.toPhoneDto(savedPhone);
     }
 
     private void validateEmail(String email) {
