@@ -5,7 +5,7 @@ spring:
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/user_db}
     username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:} # Insira sua senha do banco aqui
+    password: ${DB_PASSWORD:postgres}
 
   jpa:
     hibernate:
@@ -17,3 +17,7 @@ spring:
 
 server:
   port: ${SERVER_PORT:8080}
+
+jwt:
+  secret: ${JWT_SECRET:9a4f2c8d7e1b5a3f8e0d2c4b6a8f1e3d5c7b9a0f2e4d6c8b1a3f5e7d9c1b3a5f}
+  expiration: ${JWT_EXPIRATION:86400000}
