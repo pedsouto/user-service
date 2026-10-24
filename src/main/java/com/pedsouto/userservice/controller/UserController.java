@@ -40,8 +40,8 @@ public class UserController {
     public String login(@RequestBody UserDto userDto) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        userDto.getEmail(),
-                        userDto.getPassword()
+                        userDto.email(),
+                        userDto.password()
                 )
         );
 

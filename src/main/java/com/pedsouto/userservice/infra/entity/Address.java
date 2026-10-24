@@ -18,7 +18,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "tb_address")
+@Table(name = "addresses")
 public class Address {
 
     @Id
