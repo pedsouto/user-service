@@ -31,7 +31,7 @@ public class UserService {
 
     @Transactional
     public UserDto saveUser(UserDto userDto) {
-        validateEmail(userDto.getEmail());
+        validateEmail(userDto.email());
 
         User user = userMapper.toUserEntity(userDto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -59,12 +59,15 @@ public class UserService {
     public UserDto updateUser(String token, UserDto userDto) {
         String email = jwtUtil.extractUsername(token.substring(7));
 
-        userDto.setPassword(userDto.getPassword() != null ? passwordEncoder.encode(userDto.getPassword()) : null);
+        String encodedPassword = userDto.password() != null ? passwordEncoder.encode(userDto.password()) : null;
 
         User userEntity = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
 
         userMapper.updateUserFromDto(userDto, userEntity);
+        if (encodedPassword != null) {
+            userEntity.setPassword(encodedPassword);
+        }
 
         return userMapper.toUserDto(userRepository.save(userEntity));
     }
