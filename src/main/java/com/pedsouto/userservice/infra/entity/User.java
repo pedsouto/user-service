@@ -41,6 +41,15 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Address> addresses = new ArrayList<>();
 
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Phone> phones = new ArrayList<>();
+
+    public void addPhone(Phone phone) {
+        phones.add(phone);
+        phone.setUser(this);
+    }
+
     public void addAddress(Address address) {
         addresses.add(address);
         address.setUser(this);

@@ -6,6 +6,7 @@ public record UserDto(
         Long id,
         String name,
         String email,
-        List<AddressDto> addresses
+        List<AddressDto> addresses,
+        List<PhoneDto> phones
 ) {
 }
