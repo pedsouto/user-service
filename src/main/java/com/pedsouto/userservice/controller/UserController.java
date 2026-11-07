@@ -19,6 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -64,6 +66,13 @@ public class UserController {
     public ResponseEntity<UserDto> updateUser(@Valid @RequestBody UserUpdateDto dto,
                                               Authentication authentication) {
         return ResponseEntity.ok(userService.updateUser(authentication.getName(), dto));
+    }
+
+    @DeleteMapping("/{email}")
+    public ResponseEntity<Void> deleteByEmail(@PathVariable("email") String email,
+                                              Authentication authentication) {
+        userService.deleteByEmail(email, authentication.getName());
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping
