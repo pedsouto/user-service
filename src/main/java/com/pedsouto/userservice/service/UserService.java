@@ -9,6 +9,7 @@ import com.pedsouto.userservice.infra.entity.Address;
 import com.pedsouto.userservice.infra.repository.AddressRepository;
 import com.pedsouto.userservice.dto.UserRegistrationDto;
 import com.pedsouto.userservice.infra.entity.User;
+import com.pedsouto.userservice.infra.exception.ConflictException;
 import com.pedsouto.userservice.infra.repository.UserRepository;
 import com.pedsouto.userservice.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,7 @@ public class UserService {
     public UserDto saveUser(UserRegistrationDto dto) {
         String email = normalizeEmail(dto.email());
         if (userRepository.existsByEmailIgnoreCase(email)) {
-            throw new IllegalArgumentException("Este e-mail já está cadastrado.");
+            throw new ConflictException("Este e-mail já está cadastrado.");
         }
         User user = userMapper.toEntity(dto);
         user.setName(dto.name().trim());
@@ -119,7 +120,7 @@ public class UserService {
             String email = normalizeEmail(dto.email());
             userRepository.findByEmailIgnoreCase(email).ifPresent(existing -> {
                 if (!existing.getId().equals(user.getId())) {
-                    throw new IllegalArgumentException("Este e-mail já está cadastrado.");
+                    throw new ConflictException("Este e-mail já está cadastrado.");
                 }
             });
             user.setEmail(email);
