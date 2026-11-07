@@ -37,6 +37,24 @@ public class UserService {
                 .getId();
     }
 
+    public UserDto findByEmail(String email, String authenticatedUserId) {
+        User user = findAuthenticatedUser(authenticatedUserId);
+        if (!user.getEmail().equalsIgnoreCase(normalizeEmail(email))) {
+            throw new org.springframework.security.access.AccessDeniedException("Você só pode consultar seus próprios dados.");
+        }
+        return userMapper.toDto(user);
+    }
+
+    private User findAuthenticatedUser(String userId) {
+        try {
+            return userRepository.findById(Long.valueOf(userId))
+                    .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                            org.springframework.http.HttpStatus.NOT_FOUND, "Usuário não encontrado."));
+        } catch (NumberFormatException ex) {
+            throw new org.springframework.security.access.AccessDeniedException("Identificação inválida.");
+        }
+    }
+
     private String normalizeEmail(String email) {
         return email.trim().toLowerCase(Locale.ROOT);
     }
