@@ -1,6 +1,7 @@
 package com.pedsouto.userservice.controller;
 
 import com.pedsouto.userservice.dto.UserDto;
+import com.pedsouto.userservice.dto.AddressDto;
 import com.pedsouto.userservice.dto.LoginDto;
 import com.pedsouto.userservice.dto.UserUpdateDto;
 import com.pedsouto.userservice.infra.security.JwtUtil;
@@ -31,6 +32,19 @@ public class UserController {
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+
+    @PostMapping("/address")
+    public ResponseEntity<AddressDto> addAddress(@Valid @RequestBody AddressDto dto,
+                                                 Authentication authentication) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.addAddress(authentication.getName(), dto));
+    }
+
+    @PutMapping("/address")
+    public ResponseEntity<AddressDto> updateAddress(@RequestParam("id") Long id,
+                                                    @Valid @RequestBody AddressDto dto,
+                                                    Authentication authentication) {
+        return ResponseEntity.ok(userService.updateAddress(authentication.getName(), id, dto));
+    }
 
     @PutMapping
     public ResponseEntity<UserDto> updateUser(@Valid @RequestBody UserUpdateDto dto,
