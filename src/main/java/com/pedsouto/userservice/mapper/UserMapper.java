@@ -12,6 +12,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
+
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface UserMapper {
