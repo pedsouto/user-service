@@ -1,26 +1,26 @@
 package com.pedsouto.userservice.service;
 
-import com.pedsouto.userservice.dto.UserDto;
 import com.pedsouto.userservice.dto.AddressDto;
 import com.pedsouto.userservice.dto.PhoneDto;
-import com.pedsouto.userservice.infra.entity.Phone;
-import com.pedsouto.userservice.infra.repository.PhoneRepository;
-import com.pedsouto.userservice.infra.entity.Address;
-import com.pedsouto.userservice.infra.repository.AddressRepository;
+import com.pedsouto.userservice.dto.UserDto;
 import com.pedsouto.userservice.dto.UserRegistrationDto;
+import com.pedsouto.userservice.dto.UserUpdateDto;
+import com.pedsouto.userservice.infra.entity.Address;
+import com.pedsouto.userservice.infra.entity.Phone;
 import com.pedsouto.userservice.infra.entity.User;
 import com.pedsouto.userservice.infra.exception.ConflictException;
 import com.pedsouto.userservice.infra.exception.ResourceNotFoundException;
+import com.pedsouto.userservice.infra.repository.AddressRepository;
+import com.pedsouto.userservice.infra.repository.PhoneRepository;
 import com.pedsouto.userservice.infra.repository.UserRepository;
 import com.pedsouto.userservice.mapper.UserMapper;
+import java.util.Locale;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.pedsouto.userservice.dto.UserUpdateDto;
-
-import java.util.Locale;
-
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -90,7 +90,7 @@ public class UserService {
 
     public Long findUserIdByEmail(String email) {
         return userRepository.findByEmailIgnoreCase(normalizeEmail(email))
-                .orElseThrow(() -> new org.springframework.security.core.userdetails.UsernameNotFoundException("User not found"))
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"))
                 .getId();
     }
 
@@ -98,7 +98,7 @@ public class UserService {
     public void deleteByEmail(String email, String authenticatedUserId) {
         User user = findAuthenticatedUser(authenticatedUserId);
         if (!user.getEmail().equalsIgnoreCase(normalizeEmail(email))) {
-            throw new org.springframework.security.access.AccessDeniedException("Você só pode excluir sua própria conta.");
+            throw new AccessDeniedException("Você só pode excluir sua própria conta.");
         }
         userRepository.delete(user);
     }
@@ -137,7 +137,7 @@ public class UserService {
     public UserDto findByEmail(String email, String authenticatedUserId) {
         User user = findAuthenticatedUser(authenticatedUserId);
         if (!user.getEmail().equalsIgnoreCase(normalizeEmail(email))) {
-            throw new org.springframework.security.access.AccessDeniedException("Você só pode consultar seus próprios dados.");
+            throw new AccessDeniedException("Você só pode consultar seus próprios dados.");
         }
         return userMapper.toDto(user);
     }
@@ -147,7 +147,7 @@ public class UserService {
             return userRepository.findById(Long.valueOf(userId))
                     .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado."));
         } catch (NumberFormatException ex) {
-            throw new org.springframework.security.access.AccessDeniedException("Identificação inválida.");
+            throw new AccessDeniedException("Identificação inválida.");
         }
     }
 
