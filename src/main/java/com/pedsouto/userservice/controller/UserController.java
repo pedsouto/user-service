@@ -2,6 +2,7 @@ package com.pedsouto.userservice.controller;
 
 import com.pedsouto.userservice.dto.UserDto;
 import com.pedsouto.userservice.dto.LoginDto;
+import com.pedsouto.userservice.dto.UserUpdateDto;
 import com.pedsouto.userservice.infra.security.JwtUtil;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,6 +31,12 @@ public class UserController {
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+
+    @PutMapping
+    public ResponseEntity<UserDto> updateUser(@Valid @RequestBody UserUpdateDto dto,
+                                              Authentication authentication) {
+        return ResponseEntity.ok(userService.updateUser(authentication.getName(), dto));
+    }
 
     @GetMapping
     public ResponseEntity<UserDto> findByEmail(@RequestParam("email") String email,
