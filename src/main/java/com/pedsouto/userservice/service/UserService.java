@@ -95,6 +95,15 @@ public class UserService {
     }
 
     @Transactional
+    public void deleteByEmail(String email, String authenticatedUserId) {
+        User user = findAuthenticatedUser(authenticatedUserId);
+        if (!user.getEmail().equalsIgnoreCase(normalizeEmail(email))) {
+            throw new org.springframework.security.access.AccessDeniedException("Você só pode excluir sua própria conta.");
+        }
+        userRepository.delete(user);
+    }
+
+    @Transactional
     public UserDto updateUser(String userId, UserUpdateDto dto) {
         User user = findAuthenticatedUser(userId);
         if (dto.name() != null) {
