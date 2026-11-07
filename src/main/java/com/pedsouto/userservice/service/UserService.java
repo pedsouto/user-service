@@ -31,6 +31,12 @@ public class UserService {
         return userMapper.toDto(userRepository.save(user));
     }
 
+    public Long findUserIdByEmail(String email) {
+        return userRepository.findByEmailIgnoreCase(normalizeEmail(email))
+                .orElseThrow(() -> new org.springframework.security.core.userdetails.UsernameNotFoundException("User not found"))
+                .getId();
+    }
+
     private String normalizeEmail(String email) {
         return email.trim().toLowerCase(Locale.ROOT);
     }
