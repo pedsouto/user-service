@@ -8,6 +8,8 @@ import com.pedsouto.userservice.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import com.pedsouto.userservice.dto.UserUpdateDto;
 
 import java.util.Locale;
 
@@ -35,6 +37,36 @@ public class UserService {
         return userRepository.findByEmailIgnoreCase(normalizeEmail(email))
                 .orElseThrow(() -> new org.springframework.security.core.userdetails.UsernameNotFoundException("User not found"))
                 .getId();
+    }
+
+    @Transactional
+    public UserDto updateUser(String userId, UserUpdateDto dto) {
+        User user = findAuthenticatedUser(userId);
+        if (dto.name() != null) {
+            if (dto.name().isBlank()) {
+                throw new IllegalArgumentException("O nome não pode estar em branco.");
+            }
+            user.setName(dto.name().trim());
+        }
+        if (dto.email() != null) {
+            if (dto.email().isBlank()) {
+                throw new IllegalArgumentException("O e-mail não pode estar em branco.");
+            }
+            String email = normalizeEmail(dto.email());
+            userRepository.findByEmailIgnoreCase(email).ifPresent(existing -> {
+                if (!existing.getId().equals(user.getId())) {
+                    throw new IllegalArgumentException("Este e-mail já está cadastrado.");
+                }
+            });
+            user.setEmail(email);
+        }
+        if (dto.password() != null) {
+            if (dto.password().isBlank()) {
+                throw new IllegalArgumentException("A senha não pode estar em branco.");
+            }
+            user.setPassword(passwordEncoder.encode(dto.password()));
+        }
+        return userMapper.toDto(user);
     }
 
     public UserDto findByEmail(String email, String authenticatedUserId) {
