@@ -1,18 +1,17 @@
 package com.pedsouto.userservice.mapper;
 
-import com.pedsouto.userservice.dto.UserDto;
 import com.pedsouto.userservice.dto.AddressDto;
 import com.pedsouto.userservice.dto.PhoneDto;
-import com.pedsouto.userservice.infra.entity.Phone;
-import com.pedsouto.userservice.infra.entity.Address;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import com.pedsouto.userservice.dto.UserDto;
 import com.pedsouto.userservice.dto.UserRegistrationDto;
+import com.pedsouto.userservice.infra.entity.Address;
+import com.pedsouto.userservice.infra.entity.Phone;
 import com.pedsouto.userservice.infra.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
-
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface UserMapper {
