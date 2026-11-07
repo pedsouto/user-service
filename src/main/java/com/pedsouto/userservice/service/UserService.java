@@ -1,6 +1,9 @@
 package com.pedsouto.userservice.service;
 
 import com.pedsouto.userservice.dto.UserDto;
+import com.pedsouto.userservice.dto.AddressDto;
+import com.pedsouto.userservice.infra.entity.Address;
+import com.pedsouto.userservice.infra.repository.AddressRepository;
 import com.pedsouto.userservice.dto.UserRegistrationDto;
 import com.pedsouto.userservice.infra.entity.User;
 import com.pedsouto.userservice.infra.repository.UserRepository;
@@ -18,9 +21,11 @@ import java.util.Locale;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final AddressRepository addressRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     public UserDto saveUser(UserRegistrationDto dto) {
         String email = normalizeEmail(dto.email());
         if (userRepository.existsByEmailIgnoreCase(email)) {
@@ -30,7 +35,30 @@ public class UserService {
         user.setName(dto.name().trim());
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(dto.password()));
+        if (dto.addresses() != null) {
+            for (AddressDto addressDto : dto.addresses()) {
+                user.addAddress(userMapper.toAddressEntity(addressDto));
+            }
+        }
         return userMapper.toDto(userRepository.save(user));
+    }
+
+    @Transactional
+    public AddressDto addAddress(String userId, AddressDto dto) {
+        User user = findAuthenticatedUser(userId);
+        Address address = userMapper.toAddressEntity(dto);
+        address.setUser(user);
+        return userMapper.toAddressDto(addressRepository.save(address));
+    }
+
+    @Transactional
+    public AddressDto updateAddress(String userId, Long id, AddressDto dto) {
+        Long ownerId = Long.valueOf(userId);
+        Address address = addressRepository.findByIdAndUser_Id(id, ownerId)
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.NOT_FOUND, "Endereço não encontrado."));
+        userMapper.updateAddressFromDto(dto, address);
+        return userMapper.toAddressDto(address);
     }
 
     public Long findUserIdByEmail(String email) {
@@ -69,6 +97,7 @@ public class UserService {
         return userMapper.toDto(user);
     }
 
+    @Transactional(readOnly = true)
     public UserDto findByEmail(String email, String authenticatedUserId) {
         User user = findAuthenticatedUser(authenticatedUserId);
         if (!user.getEmail().equalsIgnoreCase(normalizeEmail(email))) {
