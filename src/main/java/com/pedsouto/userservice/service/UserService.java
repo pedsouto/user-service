@@ -2,6 +2,9 @@ package com.pedsouto.userservice.service;
 
 import com.pedsouto.userservice.dto.UserDto;
 import com.pedsouto.userservice.dto.AddressDto;
+import com.pedsouto.userservice.dto.PhoneDto;
+import com.pedsouto.userservice.infra.entity.Phone;
+import com.pedsouto.userservice.infra.repository.PhoneRepository;
 import com.pedsouto.userservice.infra.entity.Address;
 import com.pedsouto.userservice.infra.repository.AddressRepository;
 import com.pedsouto.userservice.dto.UserRegistrationDto;
@@ -22,6 +25,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
+    private final PhoneRepository phoneRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
@@ -40,7 +44,30 @@ public class UserService {
                 user.addAddress(userMapper.toAddressEntity(addressDto));
             }
         }
+        if (dto.phones() != null) {
+            for (PhoneDto phoneDto : dto.phones()) {
+                user.addPhone(userMapper.toPhoneEntity(phoneDto));
+            }
+        }
         return userMapper.toDto(userRepository.save(user));
+    }
+
+    @Transactional
+    public PhoneDto addPhone(String userId, PhoneDto dto) {
+        User user = findAuthenticatedUser(userId);
+        Phone phone = userMapper.toPhoneEntity(dto);
+        phone.setUser(user);
+        return userMapper.toPhoneDto(phoneRepository.save(phone));
+    }
+
+    @Transactional
+    public PhoneDto updatePhone(String userId, Long id, PhoneDto dto) {
+        Long ownerId = Long.valueOf(userId);
+        Phone phone = phoneRepository.findByIdAndUser_Id(id, ownerId)
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.NOT_FOUND, "Telefone não encontrado."));
+        userMapper.updatePhoneFromDto(dto, phone);
+        return userMapper.toPhoneDto(phone);
     }
 
     @Transactional
