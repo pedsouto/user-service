@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Compilar aplicação
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+
+      - name: Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Configurar Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Compilar aplicação
+        run: ./gradlew clean assemble --no-daemon
