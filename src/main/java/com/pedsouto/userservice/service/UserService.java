@@ -10,6 +10,7 @@ import com.pedsouto.userservice.infra.repository.AddressRepository;
 import com.pedsouto.userservice.dto.UserRegistrationDto;
 import com.pedsouto.userservice.infra.entity.User;
 import com.pedsouto.userservice.infra.exception.ConflictException;
+import com.pedsouto.userservice.infra.exception.ResourceNotFoundException;
 import com.pedsouto.userservice.infra.repository.UserRepository;
 import com.pedsouto.userservice.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
@@ -65,8 +66,7 @@ public class UserService {
     public PhoneDto updatePhone(String userId, Long id, PhoneDto dto) {
         Long ownerId = Long.valueOf(userId);
         Phone phone = phoneRepository.findByIdAndUser_Id(id, ownerId)
-                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
-                        org.springframework.http.HttpStatus.NOT_FOUND, "Telefone não encontrado."));
+                .orElseThrow(() -> new ResourceNotFoundException("Telefone não encontrado."));
         userMapper.updatePhoneFromDto(dto, phone);
         return userMapper.toPhoneDto(phone);
     }
@@ -83,8 +83,7 @@ public class UserService {
     public AddressDto updateAddress(String userId, Long id, AddressDto dto) {
         Long ownerId = Long.valueOf(userId);
         Address address = addressRepository.findByIdAndUser_Id(id, ownerId)
-                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
-                        org.springframework.http.HttpStatus.NOT_FOUND, "Endereço não encontrado."));
+                .orElseThrow(() -> new ResourceNotFoundException("Endereço não encontrado."));
         userMapper.updateAddressFromDto(dto, address);
         return userMapper.toAddressDto(address);
     }
@@ -146,8 +145,7 @@ public class UserService {
     private User findAuthenticatedUser(String userId) {
         try {
             return userRepository.findById(Long.valueOf(userId))
-                    .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
-                            org.springframework.http.HttpStatus.NOT_FOUND, "Usuário não encontrado."));
+                    .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado."));
         } catch (NumberFormatException ex) {
             throw new org.springframework.security.access.AccessDeniedException("Identificação inválida.");
         }
